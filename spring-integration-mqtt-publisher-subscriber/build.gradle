@@ -28,4 +28,5 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter:${springBootVersion}")
 	implementation('org.springframework.integration:spring-integration-mqtt:5.2.0.RELEASE')
 	implementation 'org.springframework.data:spring-data-mongodb:3.4.0'
+    implementation 'org.projectlombok:lombok:1.18.16'
 }

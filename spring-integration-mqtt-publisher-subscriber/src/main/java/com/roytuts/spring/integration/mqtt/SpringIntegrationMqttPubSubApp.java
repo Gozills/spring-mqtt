@@ -1,34 +1,36 @@
 package com.roytuts.spring.integration.mqtt;
 
+import com.roytuts.spring.integration.mqtt.service.impl.MqttMessageSubscribeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import com.roytuts.spring.integration.mqtt.service.MessagingService;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @SpringBootApplication(scanBasePackages = "com.roytuts.spring.integration.mqtt")
 public class SpringIntegrationMqttPubSubApp implements CommandLineRunner {
 
 	@Autowired
-	private MessagingService messagingService;
-
-	@Autowired
 	private ConfigurableApplicationContext context;
+
+	private MqttMessageSubscribeService mqttMessageSubscribeService;
+
+	private BlockingQueue<String> blockingQueue = new LinkedBlockingQueue<>();
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringIntegrationMqttPubSubApp.class, args);
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
-		final String topic = "roytuts/topic/event";
-
-		messagingService.subscribe(topic);
-
-		messagingService.publish(topic, "Hi\nThis is a sample message published to topic roytuts/topic/event", 0, true);
-
+	public void run(String... args) {
+		mqttMessageSubscribeService = new MqttMessageSubscribeService();
+		mqttMessageSubscribeService.setBlockingQueue(blockingQueue);
+		mqttMessageSubscribeService.setTopic("");
+		Thread threadMqttMessageSubscribe = new Thread(mqttMessageSubscribeService);
+		threadMqttMessageSubscribe.start();
 		context.close();
 	}
 
